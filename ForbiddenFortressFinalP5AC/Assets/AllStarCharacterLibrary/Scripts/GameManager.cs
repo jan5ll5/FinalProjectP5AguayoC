@@ -13,29 +13,36 @@ public class GameManager : MonoBehaviour
     public List<GameObject> targets;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI gameOverText;
+    public TextMeshProUGUI timerText;
     public Button startButton;
     public Button restartButton;
     public GameObject titleScreen;
     public bool isGameActive;
-    public TextMeshProUGUI timerUI;
+    public float timeRemaining = 30;
 
     private int score;
-    private int timer;
+    
     // Start is called before the first frame update
     void Start()
     {
+        isGameActive = true;
         score = 0;
         UpdateScore(0);
-
-        gameOverText.gameObject.SetActive(true);
+        UpdateTime(timeRemaining);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isGameActive)
+        if(timeRemaining > 0)
         {
-            
+            timeRemaining -= Time.deltaTime;
+            UpdateTime(timeRemaining);
+        }
+        else
+        {
+            UpdateTime(0);
+            GameOver();
         }
     }
 
@@ -53,11 +60,6 @@ public class GameManager : MonoBehaviour
         isGameActive = false;
     }
 
-    public void RestartGame()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
     public void StartGame()
     {
         isGameActive = true;
@@ -67,14 +69,14 @@ public class GameManager : MonoBehaviour
         titleScreen.gameObject.SetActive(false);
     }
 
-    IEnumerator UpdateTimer()
+    public void RestartGame()
     {
-        while(timer > 0 && isGameActive)
-        {
-            yield return new WaitForSeconds(1);
-            timer -= 1;
-            timerUI.text = "Timer: " + timer;
-        }
-        GameOver();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
+    }
+
+   public void UpdateTime(float timeLeft)
+    {
+        timerText.text = "Time Remaining: " + timeLeft;
     }
 }
